@@ -25,6 +25,7 @@
 #include <stdlib.h>
 #include <stdarg.h>
 #include <string.h>
+#include <strings.h>
 #include <time.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -32,6 +33,7 @@
 #include <termios.h>
 #include <signal.h>
 #include <locale.h>
+#include "unimatrix.h"
 
 #ifndef EXCLUDE_CONFIG_H
 #include "config.h"
@@ -200,6 +202,7 @@ void var_init() {
     for (i = 0; i <= LINES; i++) {
         for (j = 0; j <= COLS - 1; j += 2) {
             matrix[i][j].val = -1;
+            matrix[i][j].is_head = false;
         }
     }
 
@@ -268,6 +271,16 @@ void resize_screen(void) {
 }
 
 int main(int argc, char *argv[]) {
+    /* Explicit mode: preserve every original short option/default. */
+    int mode_arg;
+    for (mode_arg = 1; mode_arg < argc; mode_arg++) {
+        if (strcmp(argv[mode_arg], "--unimatrix") == 0) {
+            int pos;
+            for (pos = mode_arg; pos < argc - 1; pos++) argv[pos] = argv[pos + 1];
+            argv[argc - 1] = NULL;
+            return unimatrix_main(argc - 1, argv);
+        }
+    }
     int i, y, z, optchr, keypress;
     int j = 0;
     int count = 0;
@@ -667,7 +680,10 @@ if (console) {
             for (i = y; i <= z; i++) {
                 move(i - y, j);
 
-                if (matrix[i][j].is_head && !rainbow) {
+                /* Old scrolling stores its white head as the 0 sentinel;
+                   it does not maintain the newer is_head flag. Never pass
+                   this sentinel to curses: addch(0) prints the two cells ^@. */
+                if ((oldstyle ? matrix[i][j].val == 0 : matrix[i][j].is_head) && !rainbow) {
                     if (console || xwindow) {
                         attron(A_ALTCHARSET);
                     }
@@ -736,6 +752,8 @@ if (console) {
                         }
                         if (matrix[i][j].val == -1) {
                             addch(' ');
+                        } else if (matrix[i][j].val == 0) {
+                            addch((console || xwindow) ? 183 : '&');
                         } else if (lambda && matrix[i][j].val != ' ') {
                             addstr("λ");
                         } else {

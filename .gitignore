@@ -29,3 +29,6 @@ cmatrix
 *.core
 CMakeCache.txt
 CMakeFiles/
+
+# Native shared executable used by the dedicated mode wrappers.
+cmatrix-uni-native

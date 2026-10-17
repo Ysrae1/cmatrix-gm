@@ -12,7 +12,7 @@ AC_PROG_MAKE_SET
 
 dnl Checks for libraries.
 dnl Replace `main' with a function in -lncurses:
-AC_CHECK_LIB(ncurses, main)
+AC_CHECK_LIB(ncursesw, main)
 
 dnl Checks for header files.
 AC_HEADER_STDC

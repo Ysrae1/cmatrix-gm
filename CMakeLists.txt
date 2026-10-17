@@ -34,12 +34,14 @@ if	(HAVE_TERMIO_H)
 	add_definitions(-DHAVE_TERMIO_H)
 endif	()
 
-Set(CURSES_NEED_NCURSES TRUE)
+set(CURSES_NEED_NCURSES TRUE)
+set(CURSES_NEED_WIDE TRUE)
+add_definitions(-D_XOPEN_SOURCE_EXTENDED=1)
 find_package(Curses)
 include_directories(${CURSES_INCLUDE_DIR})
 add_definitions(-DHAVE_NCURSES_H)
 
-add_executable(cmatrix cmatrix.c)
+add_executable(cmatrix cmatrix.c unimatrix.c)
 
 target_link_libraries(cmatrix ${CURSES_LIBRARIES})
 

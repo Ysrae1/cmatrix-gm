@@ -1,5 +1,5 @@
 bin_PROGRAMS = cmatrix
-cmatrix_SOURCES = cmatrix.c
+cmatrix_SOURCES = cmatrix.c unimatrix.c unimatrix.h
 
 man_MANS = cmatrix.1
 
